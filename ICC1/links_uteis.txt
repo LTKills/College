@@ -1,0 +1,23 @@
+Exercícios inglês(Project Euler):
+https://projecteuler.net/archives
+
+Exercícios português(IME):
+http://www.ime.usp.br/~macmulti/exercicios/
+
+C++(cprograming.com):
+http://www.cprogramming.com/tutorial.html#ctutorial
+
+Noic Programming:
+http://noic.com.br/informatica/curso-noic-de-informatica/
+
+
+http://www.saraiva.com.br/calculo-um-curso-moderno-e-suas-aplicacoes-11-ed-2015-8882793.html
+
+
+https://www.dropbox.com/s/aa71ogpk8xski1j/gaalt1.pdf?m
+
+
+https://www.topcoder.com/community/data-science/data-science-tutorials/an-introduction-to-recursion-part-1/
+
+
+http://www.tutorialspoint.com/cprogramming/c_recursion.htm
