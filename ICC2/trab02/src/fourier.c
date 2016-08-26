@@ -18,12 +18,32 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <file.h>
+#include <complex.h>
+#include <math.h>
 
 
 #define SIZE UNSIGNED_CHAR
 
-int *inductGen(int c, unsigned char *raw, int size){
+double *inductGen(unsigned char *raw, int N){
+	int k, t, n;
+	double *inducts = malloc(sizeof(double)*N);
+	double x, pi = M_PI;
+	complex double z;
 
+	for(k = 0; k < N; k++){
+
+		for(t = 0; t < N/2; t++)
+			x = k*2*pi*(N/n)*t
+
+		z = cproj(cos(x) + sin(x)*I);
+
+		if(k == 0)
+			induct[k] = (1.0/N)*raw[k]*z;
+		else
+			induct[k] = (2.0/N)*raw[k]*z;
+
+	}
+	return inducts;
 }
 
 int *magsDecrease(int *induct, int size){
@@ -34,7 +54,8 @@ int *magsDecrease(int *induct, int size){
 int main(int argc, char *argv[]){
 	char *file;
 	unsigned char *raw;
-	int c, size, i, *induct, *mags;
+	int c, size, i;
+	double *inducts, *mags;
 	FILE *fp;
 
 	file = readLine(stdin);
@@ -44,13 +65,8 @@ int main(int argc, char *argv[]){
 
 	raw = (unsigned char*)readFile(fp, SIZE, &size);
 
-	induct = inductGen(c, raw, size);
+	inducts = inductGen(raw, size);
 	mags = magsDecrease(induct, size);
-
-	// Test
-	for(i = 0; i < size; i++)
-		printf("%c", vec[i]);
-	printf("\n");
 
 
 	free(vec);
