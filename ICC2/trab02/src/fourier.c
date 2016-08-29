@@ -33,20 +33,20 @@ double *inductGen(unsigned char *raw, int N){
 	for(k = 0; k < N; k++){
 
 		for(t = 0; t < N/2; t++)
-			x = k*2*pi*(N/n)*t
+			x = k*2*pi*(N/n)*t;
 
 		z = cproj(cos(x) + sin(x)*I);
 
 		if(k == 0)
-			induct[k] = (1.0/N)*raw[k]*z;
+			inducts[k] = (1.0/N)*raw[k]/z;
 		else
-			induct[k] = (2.0/N)*raw[k]*z;
+			inducts[k] = (2.0/N)*raw[k]/z;
 
 	}
 	return inducts;
 }
 
-int *magsDecrease(int *induct, int size){
+double *magsDecrease(double *induct, int size){
 
 }
 
@@ -66,10 +66,11 @@ int main(int argc, char *argv[]){
 	raw = (unsigned char*)readFile(fp, SIZE, &size);
 
 	inducts = inductGen(raw, size);
-	mags = magsDecrease(induct, size);
+	mags = magsDecrease(inducts, size);
 
 
-	free(vec);
+	free(inducts);
+	//free(mags);
 	fclose(fp);
 	return 0;
 }
