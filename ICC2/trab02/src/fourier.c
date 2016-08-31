@@ -24,23 +24,25 @@
 
 #define SIZE UNSIGNED_CHAR
 
-double *inductGen(unsigned char *raw, int N){
+double complex *inductGen(unsigned char *raw, int N){
 	int k, t, n;
-	double *inducts = malloc(sizeof(double)*N);
+	double complex *inducts = malloc(sizeof(double)*N);
 	double x, pi = M_PI;
-	complex double z;
+	double complex z, sum;
 
 	for(k = 0; k < N; k++){
 
-		for(t = 0; t < N/2; t++)
-			x = k*2*pi*(N/n)*t
+		sum = 0;
 
-		z = cproj(cos(x) + sin(x)*I);
+		for(t = 0; t < N/2; t++){
+			x = k*2*pi*t/N;
+			sum += cexp(-I*x);
+		}
 
 		if(k == 0)
-			induct[k] = (1.0/N)*raw[k]*z;
+			inducts[k] = (1.0/N)*raw[k]*sum;
 		else
-			induct[k] = (2.0/N)*raw[k]*z;
+			inducts[k] = (2.0/N)*raw[k]*sum;
 
 	}
 	return inducts;
@@ -55,7 +57,7 @@ int main(int argc, char *argv[]){
 	char *file;
 	unsigned char *raw;
 	int c, size, i;
-	double *inducts, *mags;
+	double complex *inducts, *mags;
 	FILE *fp;
 
 	file = readLine(stdin);
