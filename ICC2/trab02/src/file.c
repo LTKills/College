@@ -71,6 +71,3 @@ void *readFile(FILE* file, TYPE opt, int *vecSize){
 
 
 
-
-
-
