@@ -133,15 +133,6 @@ int main(int argc, char *argv[]){
 	mags = magsDecrease(inducts, size/2, places);
 	/*=================================*/
 
-	/*STDOUT lines*/
-	printf("%d\n", size);
-	for(i = 0; mags[i] > 0.1; i++);
-	printf("%d\n", i);
-
-	for(i = 0; i < c; i++) printf("%d ", (int) mags[i]);
-	printf("\n");
-	/*======================*/
-
 
 	magsZeroing(mags, size/2, places, c, inducts); // Zeroing organized magnitudes
 
@@ -156,8 +147,6 @@ int main(int argc, char *argv[]){
 
 	raw = inverseDft(inducts, size); // Raw is being malloc'd again
 
-	fwrite(raw, sizeof(unsigned char), size, stdout);
-	printf("\n");
 
 	free(raw); // freeing raw again :D
 	free(inducts);

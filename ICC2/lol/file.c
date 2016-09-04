@@ -68,6 +68,20 @@ void *readFile(FILE* file, TYPE opt, int *vecSize){
 }
 
 
+int main(void){
+	char name[50];
+	int c;
+	FILE *fp;
+
+
+	scanf("%s", name);
+	scanf("%d", &c);
+	fp = fopen(name, "rb");
+	fseek(fp, 0, SEEK_END);
+	c = ftell(fp);
+	printf("FTELL: %d\n", c);
+	return 0;
+}
 
 
 

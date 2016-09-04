@@ -59,6 +59,7 @@ void *readFile(FILE* file, TYPE opt, int *vecSize){
 
 	fseek(file, 0, SEEK_END);
 	*vecSize = ftell(file);
+	printf("FTELL: %d\n", *vecSize);
 	fseek(file, 0, SEEK_SET);
 
 	vec = malloc(type*(*vecSize));

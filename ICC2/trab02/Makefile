@@ -1,10 +1,7 @@
 all:
-	gcc src/fourier.c src/file.c -o t -I./include -lm -g
+	gcc src/fourier.c src/file.c -o t -I./include -lm -Wall -g
 run:
-	./t < Case_01.in > out
-rm:
-	rm out my-beautiful-new-audio.raw
+	./t
 bug:
-	valgrind ./t < Case_01.in > out
-
-
+	gcc src/fourier-test.c src/file-test.c -o t -I./include -lm -Wall -g
+	./t < Case_01.in
