@@ -81,26 +81,17 @@ unsigned char *inverseGen(double complex *inducts, int N){
 	double x;
 	double complex z;
 
-	for(k = 0; k < N/2; k++){
+	for(k = 0; k < N; k++){
 		z = 0;
 
-		for(t = 0; t < N; t++){ // Calculate intern product betwen sinusoid of frequecy k and given function
+		for(t = 0; t < N/2; t++){ // Calculate intern product betwen sinusoid of frequecy k and given function
 			x = k * 2 * M_PI * t / N; // Generate angle (or exponent, in case of e^x)
-			z += (cos(x) - I*sin(x))*inducts[k];
+			z += (cos(x) - I*sin(x))*inducts[t];
 		}
 
-		ans[k] = (unsigned char) z;
+		ans[k] = (unsigned char) round(z);
 	}
-	i = k;
-	for(; k >= 0; k--){
-		z = 0;
-		for(t = 0; t < N; t++){
-			x = k * 2 * M_PI * t / N;
-			z += (cos(x) - I*sin(x))*inducts[k];
-		}
 
-		ans[i++] = (unsigned char) creal(z);
-	}
 	return ans;
 }
 
@@ -124,7 +115,6 @@ int main(int argc, char *argv[]){
 	fclose(fp);
 
 	inducts = inductGen(raw, size);
-	free(raw);
 
 	places = malloc(sizeof(int)*size/2);
 	for(i = 0; i < size/2; i++) places[i] = i;
@@ -135,29 +125,22 @@ int main(int argc, char *argv[]){
 	for(i = 0; mags[i] > 0.1; i++);
 	printf("%d\n", i);
 
-	for(i = 0; i < c-1; i++) printf("%d ", (int) mags[i]);
-	printf("%d\n", (int) mags[i]);
+	for(i = 0; i < c; i++) printf("%d ", (int) mags[i]);
+	printf("\n");
 	/*======================*/
 
 
-	printf("\n\nC=%d\n\n", c);
 	magsZeroing(mags, size/2, places, c, inducts);
-	/*Testing*/
-	//for(i = 0; i < size/2; i++)
-	//	printf("R=%lf\tIm=%lf\n", creal(inducts[i]), cimag(inducts[i]));
-	/*=======*/
 	free(mags);
 	free(places);
+	free(raw);
 
 
 	raw = inverseGen(inducts, size);
 
-	fp = fopen("my-beautiful-new-audio.raw", "w+");
+	fwrite(raw, sizeof(unsigned char), size, stdout);
+	printf("\n");
 
-	for(i = 0; i < size; i++)
-		fwrite(raw, sizeof(unsigned char), size, fp);
-
-	fclose(fp);
 	free(raw);
 	free(inducts);
 	return 0;
