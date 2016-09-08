@@ -22,11 +22,11 @@ void swap(double *vec, int a, int b){
 /*Whooooooooooooa Fourier! -> Discrete Fourier Transform*/
 double complex *dft(unsigned char *raw, int N){
 	int k, t;
-	double complex *inducts = malloc(sizeof(double complex)*N/2);
+	double complex *inducts = malloc(sizeof(double complex)*((N/2)+N%2));
 	double x;
 	double complex z;
 
-	for(k = 0; k < N/2; k++){
+	for(k = 0; k <= N/2; k++){
 		z = 0;
 		for(t = 0; t < N; t++){ // Calculate intern product betwen sinusoid of frequecy k and given function
 			x = k * 2 * M_PI * t / N; // Generate angle (or exponent, in case of e^x)
@@ -47,11 +47,11 @@ double *magsDecrease(double complex *inducts, int N, int *places){
 	int i, j, aux;
 	double *mags = malloc(sizeof(double)*N);
 
-	for(i = 0; i < N; i++)
+	for(i = 0; i <= N; i++)
 		mags[i] = cabs(inducts[i]);
 
-	for(i = 0; i < N; i++){ 			// Bubble sort swapping both magnitudes and places
-		for(j = 1; j < N-i; j++){
+	for(i = 0; i <= N; i++){ 			// Bubble sort swapping both magnitudes and places
+		for(j = 1; j <= N-i; j++){
 			if(mags[j] > mags[j-1]){
 				swap(mags, j, j-1);
 				aux = places[j-1];
@@ -84,7 +84,7 @@ unsigned char *inverseDft(double complex *inducts, int N){
 	for(k = 0; k < N; k++){
 		z = 0;
 
-		for(t = 0; t < N/2; t++){ // Calculate intern product betwen sinusoid of frequecy k and given function
+		for(t = 0; t <= N/2; t++){ // Calculate intern product betwen sinusoid of frequecy k and given function
 			x = k * 2 * M_PI * t / N; // Generate angle (or exponent, in case of e^x)
 			z += (cos(x) + I*sin(x))*inducts[t];
 		}
@@ -128,9 +128,9 @@ int main(int argc, char *argv[]){
 
 
 	/*Organizing magnitudes for zeroing*/
-	places = malloc(sizeof(int)*size/2);
-	for(i = 0; i < size/2; i++) places[i] = i;
-	mags = magsDecrease(inducts, size/2, places);
+	places = malloc(sizeof(int)*((size/2)+size%2));
+	for(i = 0; i <= size/2; i++) places[i] = i;
+	mags = magsDecrease(inducts, size/2+size%2, places);
 	/*=================================*/
 
 	/*STDOUT lines*/
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]){
 	/*======================*/
 
 
-	magsZeroing(mags, size/2, places, c, inducts); // Zeroing organized magnitudes
+	magsZeroing(mags, size/2+size%2, places, c, inducts); // Zeroing organized magnitudes
 
 	/*Freeing*/
 	free(mags);
