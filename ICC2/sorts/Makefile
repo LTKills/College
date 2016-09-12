@@ -1,4 +1,4 @@
 all:
-	gcc test.c src/insertion.c -I. -o t -O3
+	gcc test.c src/merge.c -I. -o t -O3
 	./t
 

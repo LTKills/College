@@ -3,5 +3,6 @@
 
 void bubbleSort(int *vec, int size);
 void insertionSort(int *vec, int size);
+void mergeSort(int *vec, int start, int end);
 
 #endif
