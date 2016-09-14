@@ -20,17 +20,17 @@ void swap(double *vec, int a, int b){
 
 
 /*Whooooooooooooa Fourier! -> Discrete Fourier Transform*/
-double complex *dft(unsigned char *raw, int N){
+complex double *dft(unsigned char *raw, int N){
 	int k, t;
-	double complex *inducts = malloc(sizeof(double complex)*((N/2)+N%2));
+	complex double *inducts = (complex double*) malloc(sizeof(complex double)*(1+N/2));
 	double x;
-	double complex z;
+	complex double z;
 
 	for(k = 0; k <= N/2; k++){
 		z = 0;
 		for(t = 0; t < N; t++){ // Calculate intern product betwen sinusoid of frequecy k and given function
-			x = k * 2 * M_PI * t / N; // Generate angle (or exponent, in case of e^x)
-			z += (cos(x) - I*sin(x))*raw[t];
+			x = k * 2 * acos(-1) * t / N; // Generate angle (or exponent, in case of e^x)
+			z += cexp(-1*x*I)*raw[t];
 		}
 
 		if(k == 0)
@@ -43,9 +43,9 @@ double complex *dft(unsigned char *raw, int N){
 }
 
 /*Organize coefficients (inducts) by descending magnitude order and store original places*/
-double *magsDecrease(double complex *inducts, int N, int *places){
+double *magsDecrease(complex double *inducts, int N, int *places){
 	int i, j, aux;
-	double *mags = malloc(sizeof(double)*N);
+	double *mags = malloc(sizeof(double)*(N+1));
 
 	for(i = 0; i <= N; i++)
 		mags[i] = cabs(inducts[i]);
@@ -65,9 +65,9 @@ double *magsDecrease(double complex *inducts, int N, int *places){
 }
 
 /*Zero the N-C least significant coefficients*/
-void magsZeroing(double *mags, int N, int *places, int bound, double complex *inducts){
+void magsZeroing(double *mags, int N, int *places, int bound, complex double *inducts){
 
-	while(bound < N){
+	while(bound <= N){
 		inducts[places[bound]] = 0;
 		bound++;
 	}
@@ -75,18 +75,18 @@ void magsZeroing(double *mags, int N, int *places, int bound, double complex *in
 }
 
 /*Inverse Discrete Fourier Transform -> Generate clean signal*/
-unsigned char *inverseDft(double complex *inducts, int N){
-	unsigned char *ans = malloc(sizeof(unsigned char) * N);
+unsigned char *inverseDft(complex double *inducts, int N){
+	unsigned char *ans = malloc(sizeof(unsigned char) * (N+1));
 	int k, t;
 	double x;
-	double complex z;
+	complex double z;
 
-	for(k = 0; k < N; k++){
+	for(k = 0; k <= N; k++){
 		z = 0;
 
 		for(t = 0; t <= N/2; t++){ // Calculate intern product betwen sinusoid of frequecy k and given function
-			x = k * 2 * M_PI * t / N; // Generate angle (or exponent, in case of e^x)
-			z += (cos(x) + I*sin(x))*inducts[t];
+			x = k * 2 * acos(-1) * t / N; // Generate angle (or exponent, in case of e^x)
+			z += cexp(I*x)*inducts[t];
 		}
 
 
@@ -100,10 +100,10 @@ unsigned char *inverseDft(double complex *inducts, int N){
 
 
 int main(int argc, char *argv[]){
-	char *file;
+	char file[11];
 	unsigned char *raw;
 	int c, size = 0, i;
-	double complex *inducts;
+	complex double *inducts;
 	double *mags;
 	int *places;
 	FILE *fp;
@@ -114,9 +114,10 @@ int main(int argc, char *argv[]){
 	 	"C"
 
 */
-	file = readLine(stdin);
+	//file = readLine(stdin);
+	scanf("%s", file);
 	fp = fopen(file, "rb");
-	free(file);
+	//free(file);
 	scanf("%d", &c);
 
 	raw = (unsigned char*) readFile(fp, SIZE, &size);
@@ -128,9 +129,9 @@ int main(int argc, char *argv[]){
 
 
 	/*Organizing magnitudes for zeroing*/
-	places = malloc(sizeof(int)*((size/2)+size%2));
+	places = malloc(sizeof(int)*(1+(size/2)));
 	for(i = 0; i <= size/2; i++) places[i] = i;
-	mags = magsDecrease(inducts, size/2+size%2, places);
+	mags = magsDecrease(inducts, size/2, places);
 	/*=================================*/
 
 	/*STDOUT lines*/
@@ -143,7 +144,7 @@ int main(int argc, char *argv[]){
 	/*======================*/
 
 
-	magsZeroing(mags, size/2+size%2, places, c, inducts); // Zeroing organized magnitudes
+	magsZeroing(mags, size/2, places, c, inducts); // Zeroing organized magnitudes
 
 	/*Freeing*/
 	free(mags);
@@ -156,8 +157,10 @@ int main(int argc, char *argv[]){
 
 	raw = inverseDft(inducts, size); // Raw is being malloc'd again
 
-	fwrite(raw, sizeof(unsigned char), size, stdout);
-	printf("\n");
+	for(i = 0; i < size; i++) printf("%d\n", raw[i]);
+
+	//fwrite(raw, sizeof(unsigned char), size, stdout);
+	//printf("\n");
 
 	free(raw); // freeing raw again :D
 	free(inducts);

@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
 		printf("%d ", vec[i]);
 	printf("\n");
 
-	mergeSort(vec, 0, 3);
+	mergeSort(vec, 0, 7);
 	for(i = 0; i < size; i++)
 		printf("%d ", vec[i]);
 	printf("\n");
