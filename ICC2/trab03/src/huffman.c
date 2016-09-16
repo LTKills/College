@@ -20,59 +20,74 @@
 #include <string.h>
 #include <file.h>
 
-#define COMMAND 0
-#define FILENAME 1
-#define TOKNUM 2
+typedef struct NODE NODE;
 
-compact(char &filename){
+typedef struct{
+	char symbol;
+	char *bits;
+} RELATE;
 
+
+struct NODE{
+	NODE *left, *right;
+	char *string;
+	int size, myValue; // myValue is used here to indecate wether the node's value is 0 or 1
+};
+
+
+/*Function for huffman compactation (.txt -> .huff)*/
+void compact(char *filename){
+	printf("Compact\n");
 }
 
-decompact(char &filename){
+/*Function for huffman decompactation (.huff -> .txt)*/
+void decompact(char *filename){
+	int i, n, lim, *data;
+	FILE *huff;
+	RELATE *table = NULL;
 
+
+
+	huff = fopen(filename, "r");
+
+	for(i = 0; fgetc(huff) != '-'; i++){ 		// Reading symbols' table
+		table[i] = realloc(table, sizeof(RELATE)*(i+1));
+		fscanf(huff, "%c - ", &table[i].symbol);
+		table[i]->bits = readLine(huff);
+	}
+
+
+	for(i = 0; !feof(huff); i++){					// Reading compacted text
+		data = realloc(data, sizeof(int)*(i+1));
+		data[i] = (int) fgetc(huff);
+	}
+
+	n = i;
+	lim = (int) data[n];
+	for(i = 0; i < n-1; i++){
+		// DUNNO WHAT TO DO HERE :'(
+	}
+
+
+	//  SOME CRAZY BIG SHIT FUCK HAPPENING HERE, TOTALLY LOST :(((
+
+
+	fclose(huff);
 }
+
 
 int main(int argc, char *argv[]){
 	int i;
-	char *line, *tok, **tokens = NULL;
-	line = readLine(stdin);
+	char *filename;
+	filename = readLine(stdin);
 
-	tokens = (char**) malloc(sizeof(char*)*TOKNUM);
-
-	tokens[FILENAME] = NULL;
-
-	//Tokens[0] -> command
-	//Tokens[1] -> file name
-
-	/*PARSING INPUT STRING INTO COMMAND AND FILENAME*/
-	tok = strtok(line, " ");
-	tokens[COMMAND] = malloc(sizeof(char)*(strlen(tok)+1));
-	strcpy(tokens[COMMAND], tok);
+	if(filename[strlen(filename)-1] == 'f')				//	DECOMPACT
+		decompact(filename);			// foo.huff <- analyze last character of line
+	else
+		compact(filename);				// COMPACT
 
 
-	tok = strtok(NULL, " ");
-
-	for(i = 0; tok[i] != '.'; i++) {
-		tokens[FILENAME] = realloc(tokens[FILENAME], sizeof(char)*(i+1));
-		tokens[FILENAME][i] = tok[i]; // removing extension from FILENAME
-	}
-
-	tokens[FILENAME] = realloc(tokens[FILENAME], sizeof(char)*(i+1));
-	tokens[FILENAME][i] = '\0'; // removing extension from FILENAME
-	/*==============================================*/
-	free(line);
-
-
-	if(strcmp(tokens[COMMAND], "descompactar") == 0){				//	DECOMPACT
-		decompact(tokens[FILENAME]);
-	}
-	else if(strcmp(tokens[COMMAND], "compactar") == 0){			// 	COMPACT
-		compact(tokens[FILENAME]);
-	}
-
-
-	for(i = 0; i < 2; i++) free(tokens[i]);
-	free(tokens);
+	free(filename);
 	return 0;
 }
 
