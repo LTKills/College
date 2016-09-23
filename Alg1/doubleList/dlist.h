@@ -22,13 +22,13 @@ typedef struct{
 } dcontroler_t;
 
 
-dcontroler_t createList(void);
-BOOL isEmpty(dcontroler_t myControl);
-void insertStart(dcontroler_t *myControl, int val);
-void insertEnd(dcontroler_t *myControl, int val);
-dlist_t *searchElement(dcontroler_t myControl, int look);
-void seekAndDestroy(dcontroler_t *myControl, int look);
-void printDatList(dcontroler_t myControl);
-dcontroler_t exterminateList(dcontroler_t myControl);
+dcontroler_t create_dList(void);
+BOOL is_dEmpty(dcontroler_t myControl);
+void insert_dStart(dcontroler_t *myControl, int val);
+void insert_dEnd(dcontroler_t *myControl, int val);
+dlist_t *search_dElement(dcontroler_t myControl, int look);
+void seekAnd_dDestroy(dcontroler_t *myControl, int look);
+void printDat_dList(dcontroler_t myControl);
+dcontroler_t exterminate_dList(dcontroler_t myControl);
 
 #endif
