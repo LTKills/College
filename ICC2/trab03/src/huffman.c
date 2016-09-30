@@ -36,6 +36,28 @@ struct NODE{
 
 
 
+/*Creates a node which points to left and right*/
+void createNode(NODE *left, NODE *right){			//	DO NOT USE THIS SHIT ON LEAVES
+	int i;
+	NODE *new = malloc(sizeof(NODE));
+
+	new->next = NULL;
+	new->prev = NULL;
+	new->left = left;
+	new->right = right;
+	new->frequency = -1;	// Not-leave indicator
+
+	new->string = malloc(sizeof((strlen(left->string)+strlen(right->string))+1));
+
+	/*Creating node string, which is the sum of strings left and right*/
+	strcpy(new->string, left->string);
+	strcat(new->string, right->string);
+	strcat(new->string, "\0");
+
+}
+
+
+
 /*Insert values on the leaves by frequency and name order*/
 void insertOrd(NODE *insert, NODE *start, NODE *end){
 	NODE *p = start;
@@ -92,7 +114,7 @@ void compact(char *filename){
 	int *freq = calloc(128, sizeof(int));
 	char *string = NULL;
 	FILE *fp = NULL;
-	NODE **leaves = NULL, *start, *end;
+	NODE **leaves = NULL, *start, *end, *aux;
 
 
 	fp = fopen(filename, "r");
@@ -115,28 +137,28 @@ void compact(char *filename){
 	}
 
 	/*Setting manually all this starting shit*/
-	if(leaves[0]->frequency > leaves[1]->frequency){
+	if(leaves[0]->frequency > leaves[1]->frequency){ // Frequency has priority
 		start = leaves[0];
 		end = leaves[1];
 		leaves[0]->next = leaves[1];
 		leaves[1]->prev = leaves[0];
 		leaves[0]->prev = NULL;
 		leaves[1]->next = NULL;
-	}else if(leaves[0]->frequency < leaves[1]->frequency){
+	}else if(leaves[0]->frequency < leaves[1]->frequency){ // Most frequent first
 		start = leaves[1];
 		end = leaves[0];
 		leaves[1]->next = leaves[0];
 		leaves[0]->prev = leaves[1];
 		leaves[1]->prev = NULL;
 		leaves[0]->next = NULL;
-	}else if(leaves[0]->frequency == leaves[1]->frequency && leaves[0]->string[0] <= leaves[1]->string[0]){
+	}else if(leaves[0]->frequency == leaves[1]->frequency && leaves[0]->string[0] <= leaves[1]->string[0]){ // If frequency is a tie, order by alphabetically
 		start = leaves[0];
 		end = leaves[1];
 		leaves[0]->next = leaves[1];
 		leaves[1]->prev = leaves[0];
 		leaves[0]->prev = NULL;
 		leaves[1]->next = NULL;
-	}else{
+	}else{							//	A comes b4 B
 		start = leaves[1];
 		end = leaves[0];
 		leaves[1]->next = leaves[0];
@@ -146,10 +168,29 @@ void compact(char *filename){
 	}
 	/*==============UGLY===============*/
 
+
+	/*
+	 *															  TIE
+	 *															   ^
+	 *															  ---
+	 *	O I J A L P		======AFTER ORDERING=====>  		L A J O P I
+	 *	2 1 3 4 8 2											8 4 3 2 2 1
+	 *
+	 */
+
 	/*Ordering leaves*/
 	for(i = 2; i < nleaves; i++)
 		insertOrd(leaves[i], start, end);
 
+	aux = end;
+	for(i = 0; aux != start;){
+		if(i%2 != 0){ 				// odd
+			if(aux->frequency != aux->prev->frequency){
+				createNode(NULL, aux);
+				i++;
+			}
+		}
+	}
 
 	//Deallocation
 	free(leaves);
