@@ -1,4 +1,4 @@
 all:
-	gcc src/huffman.c src/file.c -o t -I ./include/
+	gcc src/huffman.c src/file.c -o t -I ./include/ -g -Wall
 run:
 	./t

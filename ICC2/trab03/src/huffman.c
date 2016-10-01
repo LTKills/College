@@ -38,74 +38,80 @@ struct NODE{
 
 /*Creates a node which points to left and right*/
 void createNode(NODE *left, NODE *right){			//	DO NOT USE THIS SHIT ON LEAVES
-	int i;
 	NODE *new = malloc(sizeof(NODE));
 
 	new->next = NULL;
 	new->prev = NULL;
 	new->left = left;
 	new->right = right;
-	new->frequency = -1;	// Not-leave indicator
+	new->frequency = left->frequency+right->frequency;
 
 	new->string = malloc(sizeof((strlen(left->string)+strlen(right->string))+1));
 
 	/*Creating node string, which is the sum of strings left and right*/
 	strcpy(new->string, left->string);
 	strcat(new->string, right->string);
-	strcat(new->string, "\0");
 
 }
 
 
 
 /*Insert values on the leaves by frequency and name order*/
-void insertOrd(NODE *insert, NODE *start, NODE *end){
-	NODE *p = start;
+void insertOrd(NODE *insert, NODE **start, NODE **end){
+	NODE *p = *start;
 	char *aux;
 
 	/*Border case START*/
-	if(insert->frequency <= start->frequency){
-		insert->next = start;
+	if(insert->frequency > (*start)->frequency){
+		printf("entrei start\n");
+		printf("trying %s\n", insert->string);
+		insert->next = *start;
 		insert->prev = NULL;
-		start->prev = insert;
-		start = insert;
+		*start = insert;
 
 		/*Ordering according to the name*/
-		if(insert->frequency == start->frequency)
-			while(insert->string[0] > insert->next->string[0]){
+		if(insert->frequency == (*start)->frequency){
+			printf("entrei name1\n");
+			while(insert->string[0] < insert->next->string[0]){
 				aux = insert->string;
 				insert->string = insert->next->string;
 				insert->next->string = aux;
 			}
+		}
 		return;
 	}
 
-	/*Border case END*/
-	while(insert->frequency < p->frequency){
-		if(p->next == NULL && insert->frequency < p->frequency){
-			insert->previous = p;
-			insert->next = NULL;
-			p->next = insert;
-			end = insert;
-			return;
-		}
+	while(insert->frequency > p->frequency && p != *end)
 		p = p->next;
+
+	/*Border case END*/
+	if(p == *end && insert->frequency > (*end)->frequency){
+		printf("entrei end\n");
+		insert->prev = *end;
+		insert->next = (*end)->next;
+		if((*end)->next != NULL)
+			(*end)->next = insert;
+		*end = insert;
+		return;
 	}
 
+
 	/*MOST CASES*/
+	if(p == *end) *end = insert;
 	insert->prev = p;
 	insert->next = p->next;
 	p->next = insert;
-	p->next->prev = insert;
 	/*==========*/
 
 	/*Ordering according to the name*/
-	if(insert->frequency == insert->next->frequency)
-		while(insert->string[0] > insert->next->string[0]){
+	if(insert->frequency == insert->next->frequency){
+		printf("entrei name2\n");
+		while(insert->string[0] < insert->next->string[0]){
 			aux = insert->string;
 			insert->string = insert->next->string;
 			insert->next->string = aux;
 		}
+	}
 }
 
 /*Function for huffman compactation (.txt -> .huff)*/
@@ -116,16 +122,20 @@ void compact(char *filename){
 	FILE *fp = NULL;
 	NODE **leaves = NULL, *start, *end, *aux;
 
+	printf("So far all good...\n");
 
 	fp = fopen(filename, "r");
 	string = readLine(fp);
 
 	for(i = 0; i < strlen(string); i++) freq[(int) string[i]]++; // counting frequencies
 
+	printf("Creating leaves...\n");
+	printf("nleaves = %d\n", nleaves);
 	// creating leaves
 	for(i = 0; i < 128; i++){
 		if(freq[i] != 0){
 			leaves = realloc(leaves, sizeof(NODE*)*(nleaves+1));
+			leaves[nleaves] = malloc(sizeof(NODE));
 			leaves[nleaves]->string = malloc(sizeof(char)*2);
 			leaves[nleaves]->string[0] = (char) i;
 			leaves[nleaves]->string[1] = '\0';
@@ -136,6 +146,7 @@ void compact(char *filename){
 		}
 	}
 
+	printf("Leaves created...\n");
 	/*Setting manually all this starting shit*/
 	if(leaves[0]->frequency > leaves[1]->frequency){ // Frequency has priority
 		start = leaves[0];
@@ -173,15 +184,17 @@ void compact(char *filename){
 	 *															  TIE
 	 *															   ^
 	 *															  ---
-	 *	O I J A L P		======AFTER ORDERING=====>  		L A J O P I
+	 *	O I J A L P		======AFTER ORDERING=====>  		L A J P O I
 	 *	2 1 3 4 8 2											8 4 3 2 2 1
 	 *
 	 */
 
+	printf("Ordering now...\n");
 	/*Ordering leaves*/
 	for(i = 2; i < nleaves; i++)
-		insertOrd(leaves[i], start, end);
+		insertOrd(leaves[i], &start, &end);
 
+	/*
 	aux = end;
 	for(i = 0; aux != start;){
 		if(i%2 != 0){ 				// odd
@@ -191,6 +204,13 @@ void compact(char *filename){
 			}
 		}
 	}
+    */
+	aux = start;
+	while(aux != NULL){
+		printf("\n\n\nFreq=%d\tstring=%s\tnext=%p\tprev=%p\n", aux->frequency, aux->string, aux->next, aux->prev);
+		aux = aux->next;
+	}
+
 
 	//Deallocation
 	free(leaves);
@@ -205,11 +225,10 @@ void decompact(char *filename){
 
 
 int main(int argc, char *argv[]){
-	int i;
 	char *filename;
 	filename = readLine(stdin);
 
-	if(filename[strlen(filename)-1] == 'f')				// foo.huff <- analyze last character of line
+	if(filename[strlen(filename)-1] == 'f')		// foo.huff <- analyze last character of line
 		decompact(filename);			//	DECOMPACT
 	else
 		compact(filename);				// COMPACT
