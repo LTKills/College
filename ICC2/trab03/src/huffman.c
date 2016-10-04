@@ -35,18 +35,50 @@ struct NODE{
 	int frequency;
 };
 
+
+void destroyTree(NODE *start){
+	if(start == NULL) return;
+
+	NODE *aux1 = start->left, *aux2 = start->right;
+
+
+	free(start->string);
+	free(start);
+	destroyTree(aux1);
+	destroyTree(aux2);
+
+}
+
+void printList(NODE *start){
+	NODE *aux = start;
+
+	printf("===============================PrintList==============================\n");
+	printf("aux=%p\n", aux);
+	while(aux != NULL){
+		printf("=======================================");
+		printf("\nAddress=%p\n", aux);
+		printf("\nString=%s\n", aux->string);
+		printf("\nFrequency=%d\n", aux->frequency);
+		printf("\nLeft=%p\n", aux->left);
+		printf("\nRight=%p\n", aux->right);
+		printf("\nPrevious=%p\n", aux->prev);
+		printf("\nNext=%p\n", aux->next);
+		aux = aux->next;
+	}
+}
+
+
 void inOrder(NODE* node){
 	//printf("INORDER\n");
 	if (node){
 		inOrder(node->left);
-		printf("%d - %s\n", node->frequency, node->string);
+		printf("%d - '%s'\n", node->frequency, node->string);
 		inOrder(node->right);
 	}
 }
 
 /*Creates a node which points to left and right*/
 NODE *createNode(NODE *left, NODE *right){			//	DO NOT USE THIS SHIT ON LEAVES
-	printf("CREATE NODE%d\n", lol);
 	lol++;
 	NODE *new = malloc(sizeof(NODE));
 
@@ -62,7 +94,6 @@ NODE *createNode(NODE *left, NODE *right){			//	DO NOT USE THIS SHIT ON LEAVES
 	strcpy(new->string, left->string);
 	strcat(new->string, right->string);
 
-	printf("Returning => %p\t%s\t%d\n", new, new->string, new->frequency);
 	return new;
 }
 
@@ -91,14 +122,11 @@ void insertStart(NODE *insert, NODE **start){
 /*Inserting related with end*/
 void insertEnd(NODE *insert, NODE **end){
 	if(insert->frequency > (*end)->frequency){				//	insert BEFORE end
-		printf("Insert before1 end\n");
-		printf("Insert is %s\n", insert->string);
 		insert->next = *end;
 		insert->prev = (*end)->prev;
 		(*end)->prev->next = insert;
 		(*end)->prev = insert;
 	}else if(insert->frequency < (*end)->frequency){		//	insert AFTER end
-		printf("Insert after end\n");
 		insert->prev = *end;
 		insert->next = (*end)->next;
 		if((*end)->next != NULL){
@@ -107,16 +135,11 @@ void insertEnd(NODE *insert, NODE **end){
 		(*end)->next = insert;
 	}else{
 		if(strcmp(insert->string, (*end)->string) > 0){		// insert BEFORE end
-			printf("Insert before2 end\n");
-			printf("Insert is %s\n", insert->string);
-			printf("end-%p\tend->next=%p\tend->prev=%p\tinsert=%p\tinsert->prev=%p\tinsert->next=%p\n", *end, (*end)->next, (*end)->prev, insert, insert->prev, insert->next);
 			insert->next = *end;
 			insert->prev = (*end)->prev;
 			(*end)->prev->next = insert;
 			(*end)->prev = insert;
-			printf("end-%p\tend->next=%p\tend->prev=%p\tinsert=%p\tinsert->prev=%p\tinsert->next=%p\n", *end, (*end)->next, (*end)->prev, insert, insert->prev, insert->next);
 		}else{													// insert AFTER end
-			printf("Insert after end\n");
 			insert->prev = *end;
 			insert->next = (*end)->next;
 			if((*end)->next != NULL){
@@ -130,11 +153,10 @@ void insertEnd(NODE *insert, NODE **end){
 void insertOrd(NODE *insert, NODE **start, NODE **end){
 	NODE *p = *start;
 	char *aux;
-	printf("insertOrd\n");
+	NODE *nodeAux;
 
 	/*Border case START*/
 	if(p->frequency <= insert->frequency){
-		printf("insertStart\n");
 		insertStart(insert, start);						//			I wanna insert BEFORE or AFTER start
 		return;
 	}
@@ -145,7 +167,6 @@ void insertOrd(NODE *insert, NODE **start, NODE **end){
 
 	/*Border case END*/
 	if(p == *end){
-		printf("insertEnd\n");
 		insertEnd(insert, end);							//	I want to insert BEFORE or AFTER end
 		return;
 	}
@@ -162,6 +183,14 @@ void insertOrd(NODE *insert, NODE **start, NODE **end){
 	if(insert->frequency == insert->next->frequency){
 		//printf("entrei name2\n");
 		while(strcmp(insert->string, insert->next->string) < 0 && insert->frequency == insert->next->frequency){
+			nodeAux = insert->next->left;
+			insert->next->left = insert->left;
+			insert->left = nodeAux;
+
+			nodeAux = insert->next->right;
+			insert->next->right = insert->right;
+			insert->right = nodeAux;
+
 			aux = insert->string;
 			insert->string = insert->next->string;
 			insert->next->string = aux;
@@ -198,7 +227,6 @@ void compact(char *filename){
 		}
 	}
 
-	printf("Leaves created...\n");
 	/*Setting manually all this starting shit*/
 	if(leaves[0]->frequency > leaves[1]->frequency){ // Frequency has priority
 		start = leaves[0];
@@ -241,42 +269,28 @@ void compact(char *filename){
 	 *
 	 */
 
-	printf("Ordering now...\n");
 	/*Ordering leaves*/
-	//printf("start=%p\tend=%p\n", start, end);
-	//printf("start->prev=%p\tstart->next=%p\tend->prev=%p\tend->next=%p\n", start->prev, start->next, end->prev, end->next);
 	for(i = 2; i < nleaves; i++){
 		insertOrd(leaves[i], &start, &end);
-	//	printf("start=%p\tend=%p\n", start, end);
-	//	printf("start->prev=%p\tstart->next=%p\tend->prev=%p\tend->next=%p\n", start->prev, start->next, end->prev, end->next);
 	}
 
-
-
-	printf("All leaves insered\n");
 
 	while(start != end){
-		aux = start;
-		printf("========================================================================================================\n");
-		while(aux != NULL){
-			printf("\n\n\nFreq=%d\tstring=%s\tme=%p\tnext=%p\tprev=%p\n", aux->frequency, aux->string, aux, aux->next, aux->prev);
-			aux = aux->next;
-		}
+		printList(start);
 
-		//printf("END == %p\n", end);
 		aux = createNode(end, end->prev);
-		printf("Aux is %p\n", aux);
+		printf("Aux is %s\n", aux->string);
 		insertOrd(aux, &start , &end);
+		nleaves--;
 		end = end->prev->prev;
 	}
-	printf("Am I here?\n");
 
-	end = createNode(start, start->next);
-	start = end;
+	printf("Start = '%s'\n", start->string);
 	inOrder(start);
 
 
 	//Deallocation
+	destroyTree(start);
 	free(leaves);
 	free(freq);
 	free(string);
