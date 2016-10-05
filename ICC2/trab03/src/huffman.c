@@ -55,14 +55,17 @@ void printList(NODE *start){
 	printf("===============================PrintList==============================\n");
 	printf("aux=%p\n", aux);
 	while(aux != NULL){
-		printf("=======================================");
-		printf("\nAddress=%p\n", aux);
-		printf("\nString=%s\n", aux->string);
-		printf("\nFrequency=%d\n", aux->frequency);
-		printf("\nLeft=%p\n", aux->left);
-		printf("\nRight=%p\n", aux->right);
-		printf("\nPrevious=%p\n", aux->prev);
-		printf("\nNext=%p\n", aux->next);
+		printf("Address=%p\t", aux);
+		printf("String=%s\t", aux->string);
+		printf("Frequency=%d\t", aux->frequency);
+		if(aux->left != NULL) printf("Left=%s", aux->left->string);
+		printf("\t");
+		if(aux->right != NULL) printf("Right=%s", aux->right->string);
+		printf("\t");
+		if(aux->prev != NULL)	printf("Previous=%s", aux->prev->string);
+		printf("\t");
+		if(aux->next != NULL)	printf("Next=%s", aux->next->string);
+		printf("\n");
 		aux = aux->next;
 	}
 }
@@ -161,9 +164,7 @@ void insertOrd(NODE *insert, NODE **start, NODE **end){
 		return;
 	}
 
-	while(insert->frequency < p->frequency && p != *end){
-		p = p->next; 													// p is always AFTER insert
-	}
+	while(insert->frequency < p->frequency && p != *end) p = p->next; 		// p is always AFTER insert
 
 	/*Border case END*/
 	if(p == *end){
@@ -203,7 +204,7 @@ void insertOrd(NODE *insert, NODE **start, NODE **end){
 void compact(char *filename){
 	int i, nleaves = 0;
 	int *freq = calloc(128, sizeof(int));
-	char *string = NULL;
+	char *string = NULL, *outname = malloc(sizeof(char)*(strlen(filename)+2));
 	FILE *fp = NULL;
 	NODE **leaves = NULL, *start, *end, *aux;
 
@@ -275,6 +276,7 @@ void compact(char *filename){
 	}
 
 
+	/*Creating Huffman Tree*/
 	while(start != end){
 		printList(start);
 
@@ -285,16 +287,33 @@ void compact(char *filename){
 		end = end->prev->prev;
 	}
 
+
+	printf("===================AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHGGGGGGGGGG=========================\n");
+	aux = start;
+	while(aux != NULL){
+		printf("String='%s'\tFreq=%d\tleft='%s'\tright='%s'\n", aux->string, aux->frequency, aux->left, aux->right);
+		aux = aux->next;
+	}
+
 	printf("Start = '%s'\n", start->string);
 	inOrder(start);
+	fclose(fp);
+
+	/*GENERATING NAME.HUFF STRING*/
+	for(i = 0; i < strlen(filename)-4; i++)		//	if filename is 'test.txt', outname is 'test.huff'
+		outname[i] = filename[i];
+	strcat(outname, ".huff");
+	/*===========================*/
+
+	fp = fopen(outname, "w+");
 
 
 	//Deallocation
 	destroyTree(start);
+	fclose(fp);
 	free(leaves);
 	free(freq);
 	free(string);
-	fclose(fp);
 }
 
 /*Function for huffman decompactation (.huff -> .txt)*/
