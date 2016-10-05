@@ -1,5 +1,7 @@
 all:
-	gcc src/huffman.c src/file.c -o t -I ./include/ -g -Wall
+	gcc src/huffman.c src/file.c src/insert.c -o t -I ./include/ -g -Wall
 	./t
 run:
 	./t
+rm:
+	rm test.huff
