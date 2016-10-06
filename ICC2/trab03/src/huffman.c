@@ -149,7 +149,7 @@ void compact(char *filename){
 	for(i = 0; i < k; i++) codes[i] = malloc(sizeof(CODE));
 	codeGen(d->start, codes, 1, &n, string);
 	for(i = 0; i < k; i++) fprintf(fp, "%c - %s\n", codes[i]->letter, codes[i]->string);
-	fprintf("");
+	fprintf(fp, "-\n");
 
 
 
