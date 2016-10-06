@@ -36,17 +36,30 @@ void destroyTree(NODE *start){
 }
 
 
-void inOrder(NODE* node, int op, int *index, CODE *codes, char string[255]){
-	if(node->left == NULL && node->right == NULL){
-		strcpy(codes[*index]->string, string);
-	 	(*index)++;
+void codeGen(NODE *now, CODE **code, int nchars, int *pos, char *string){
+
+	if(strlen(now->string) == 1){
+		code[*pos]->letter = now->string[0];
+		code[*pos]->string = malloc(sizeof(char)*nchars);
+		strncpy(code[*pos]->string, string, nchars);
+		code[*pos]->string[nchars-1] = '\0';
+		(*pos)++;
+		return;
 	}
-	inOrder(node->left, 0, index, codes, string);
-	inOrder(node->right, 1, index, codes, string);
+
+	/*Going left*/
+	string[nchars-1] = '0';
+	codeGen(now->left, code, nchars+1, pos, string);
+
+	/*Going right*/
+	string[nchars-1] = '1';
+	codeGen(now->right, code, nchars+1, pos, string);
+
 }
 
-/*Creates a node which points to left and right*/
-NODE *createNode(NODE *left, NODE *right){			//	DO NOT USE THIS SHIT ON LEAVES
+
+
+NODE *createNode(NODE *left, NODE *right){			//	PLEASE USE THIS SHIT ON LEAVES
 	NODE *new = malloc(sizeof(NODE));
 
 	new->next = NULL;
@@ -71,9 +84,10 @@ void compact(char *filename){
 	int i, k = 0, n = 0;
 	FILE *fp;
 	char *outname = calloc(strlen(filename)+2, sizeof(char));
+	char *string = calloc(255, sizeof(char));
 	DECK *d = createDeck();
 	NODE *s0, *s1;
-	CODE *codes;
+	CODE **codes;
 
 	/*Taking care of initial values of DATA*/
 	DATA *data = malloc(sizeof(DATA));
@@ -131,8 +145,11 @@ void compact(char *filename){
 	fp = fopen(outname, "w+");
 
 	/*Generating codes*/
-	codes = malloc(sizeof(CODE)*k);
-	inOrder(d->start, string, -1, &n, codes);
+	codes = malloc(sizeof(CODE**)*k);
+	for(i = 0; i < k; i++) codes[i] = malloc(sizeof(CODE));
+	codeGen(d->start, codes, 1, &n, string);
+	for(i = 0; i < k; i++) fprintf(fp, "%c - %s\n", codes[i]->letter, codes[i]->string);
+	fprintf("");
 
 
 
@@ -140,6 +157,7 @@ void compact(char *filename){
 	/*DEALLOCATING*/
 	fclose(fp);
 	destroyTree(d->start);
+	free(string);
 	free(codes);
 	free(data->letters);
 	free(data->string);
