@@ -6,6 +6,7 @@ typedef struct NODE NODE;
 typedef struct{
 	char *string;
 	char letter;
+	int frequency;
 } CODE;
 
 typedef struct{
