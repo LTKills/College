@@ -15,12 +15,53 @@
  *
  * =====================================================================================
  */
+//Coding is also art...
+//				LTKills
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <file.h>
 #include <insert.h>
 #include <math.h>
+
+
+char fetch(CODE **codes, int ncodes, char *string){
+	int i;
+	for(i = 0; i < ncodes; i++)
+		if(strcmp(codes[i]->string, string) == 0) return codes[i]->letter;
+	return -1;
+}
+
+
+/*Decodes binary file into new txt file*/
+void decodePlz(CODE **codes, int ncodes, char *binary, FILE *fp, int bits){
+	int i, j;
+	char *string = NULL;
+	char c;
+
+
+	for(i = 0, j = 0; i < bits; i++){
+		string = realloc(string, sizeof(char)*(j+2));
+
+		if((binary[i/8] & (128 >> i%8)) != 0)	string[j] = '1';
+
+		else	string[j] = '0';
+
+		string[j+1] = '\0';
+		c = fetch(codes, ncodes, string);
+
+		j++;
+		if(c != -1){
+			fprintf(fp, "%c", c);
+			free(string);
+			string = NULL;
+			j = 0;
+		}
+	}
+	fprintf(fp, "\n");
+}
+
 
 /*Frees the deck*/
 void destroyTree(NODE *start){
@@ -37,6 +78,7 @@ void destroyTree(NODE *start){
 }
 
 
+/*Codes the binary trash*/
 int writeBin(unsigned char *binary, char *code, int j){
 	int i;
 	for(i = 0; i < strlen(code); i++){
@@ -49,6 +91,7 @@ int writeBin(unsigned char *binary, char *code, int j){
 	return j;
 }
 
+/*Generate the binary code for each character*/
 void codeGen(NODE *now, CODE **code, int nchars, int *pos, char *string){
 
 	if(strlen(now->string) == 1){
@@ -72,8 +115,8 @@ void codeGen(NODE *now, CODE **code, int nchars, int *pos, char *string){
 }
 
 
-
-NODE *createNode(NODE *left, NODE *right){			//	PLEASE USE THIS SHIT ON LEAVES
+/*Creates new node at the tree having left and right as sons*/
+NODE *createNode(NODE *left, NODE *right){
 	NODE *new = malloc(sizeof(NODE));
 
 	new->next = NULL;
@@ -158,7 +201,7 @@ void compact(char *filename){
 	fp1 = fopen(outname, "w+");
 
 	/*Generating codes*/
-	codes = malloc(sizeof(CODE**)*k);
+	codes = malloc(sizeof(CODE*)*k);
 	for(i = 0; i < k; i++) codes[i] = malloc(sizeof(CODE));
 	codeGen(d->start, codes, 1, &n, string);
 
@@ -191,6 +234,7 @@ void compact(char *filename){
 		}
 	}
 
+	//Setting up last byte of binary
 	binary[l] = j%8;
 	fwrite(binary, sizeof(unsigned char), l+1, fp1);
 
@@ -222,9 +266,12 @@ void compact(char *filename){
 
 /*Function for huffman decompactation (.huff -> .txt)*/
 void decompact(char *filename){
-	int i;
-	FILE *fp, *fp1;
+	int i = 0, k = 0, bits = 0;
+	FILE *fp = fopen(filename, "r");
+	FILE *fp1;
 	char *outname = calloc(strlen(filename)+1, sizeof(char));
+	char c, *binary = NULL;
+	CODE **codes = NULL;
 
 
 	/* GENERATING NAME.TXT STRING*/
@@ -235,7 +282,43 @@ void decompact(char *filename){
 
 	fp1 = fopen(outname, "w+");
 
+
+	/*Getting codes along with characters*/
+	c = fgetc(fp);
+	while(c != '-'){
+		fseek(fp, 3, SEEK_CUR);
+		codes = realloc(codes, sizeof(CODE*)*(k+1));
+		codes[k] = malloc(sizeof(CODE));
+		codes[k]->letter = c;
+		codes[k]->string = readLine(fp);
+		k++;
+		c = fgetc(fp);
+	}
+	fgetc(fp);		//	There is a maroterzz(marotation) \n here
+
+	/*asd\0*/
+	/*012 3*/
+
+
+	//Reading binary code
+	binary = readLine(fp);
+
+	bits = (strlen(binary) - 2)*8 + binary[strlen(binary)-1];		//	total number of valid bits
+	decodePlz(codes, k, binary, fp1, bits);	 // decodePlz does not deal with the last 2 bytes of binary
+
+
+
+	/*Deallocation*/
 	fclose(fp1);
+	fclose(fp);
+	free(binary);
+	free(outname);
+	for(i = 0; i < k; i++){
+		free(codes[i]->string);
+		free(codes[i]);
+	}
+	free(codes);
+
 }
 
 
