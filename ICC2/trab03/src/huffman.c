@@ -44,7 +44,7 @@ void decodePlz(CODE **codes, int ncodes, char *binary, FILE *fp, int bits){
 	for(i = 0, j = 0; i < bits; i++){
 		string = realloc(string, sizeof(char)*(j+2));
 
-		if((binary[i/8] & (128 >> i%8)) != 0)	string[j] = '1';
+		if((binary[i/8] & (128 >> i%8)) != 0)	string[j] = '1';			//	AND WITH 10000000 SHIFTED >> I
 
 		else	string[j] = '0';
 
@@ -52,10 +52,10 @@ void decodePlz(CODE **codes, int ncodes, char *binary, FILE *fp, int bits){
 		c = fetch(codes, ncodes, string);
 
 		j++;
-		if(c != -1){
+		if(c != -1){						//	FOUND!
 			fprintf(fp, "%c", c);
 			free(string);
-			string = NULL;
+			string = NULL;			//	RESTARTING
 			j = 0;
 		}
 	}
@@ -139,9 +139,8 @@ NODE *createNode(NODE *left, NODE *right){
 /*Function for huffman compactation (.txt -> .huff)*/
 void compact(char *filename){
 	int i, k = 0, n = 0, l = 0, j = 0;
-	FILE *fp, *fp1;
+	FILE *fp;
 	unsigned char *binary = NULL;
-	char *outname = calloc(strlen(filename)+2, sizeof(char));
 	char *string = calloc(255, sizeof(char));
 	DECK *d = createDeck();
 	NODE *s0, *s1;
@@ -192,14 +191,6 @@ void compact(char *filename){
 	/*================================================*/
 
 
-	/* GENERATING NAME.HUFF STRING*/
-		for(i = 0; i < strlen(filename)-4; i++)		//	if filename is 'test.txt', outname is 'test.huff'
-			outname[i] = filename[i];
-		strcat(outname, ".huff");
-	/* ===========================*/
-
-	fp1 = fopen(outname, "w+");
-
 	/*Generating codes*/
 	codes = malloc(sizeof(CODE*)*k);
 	for(i = 0; i < k; i++) codes[i] = malloc(sizeof(CODE));
@@ -208,12 +199,12 @@ void compact(char *filename){
 	for(l = 0; l < 128; l++){
 		for(i = 0; i < k; i++){
 			if(codes[i]->letter == l){
-				fprintf(fp1, "%c - %s\n", codes[i]->letter, codes[i]->string);
+				fprintf(stdout, "%c - %s\n", codes[i]->letter, codes[i]->string);
 				break;
 			}
 		}
 	}
-	fprintf(fp1, "-\n");
+	fprintf(stdout, "-\n");
 
 
 
@@ -236,16 +227,12 @@ void compact(char *filename){
 
 	//Setting up last byte of binary
 	binary[l] = j%8;
-	fwrite(binary, sizeof(unsigned char), l+1, fp1);
 
-
-	/*======================*/
-
+	for(i = 0; i < l+1; i++) printf("%d\n", binary[i]);
 
 
 
 	/*DEALLOCATING*/
-	fclose(fp1);
 	fclose(fp);
 	destroyTree(d->start);
 	free(binary);
@@ -260,7 +247,6 @@ void compact(char *filename){
 	free(data->string);
 	free(data);
 	free(d);
-	free(outname);
 
 }
 
@@ -268,19 +254,8 @@ void compact(char *filename){
 void decompact(char *filename){
 	int i = 0, k = 0, bits = 0;
 	FILE *fp = fopen(filename, "r");
-	FILE *fp1;
-	char *outname = calloc(strlen(filename)+1, sizeof(char));
 	char c, *binary = NULL;
 	CODE **codes = NULL;
-
-
-	/* GENERATING NAME.TXT STRING*/
-		for(i = 0; i < strlen(filename)-5; i++)		//	if filename is 'test.txt', outname is 'test.huff'
-			outname[i] = filename[i];
-		strcat(outname, ".txt");
-	/* ===========================*/
-
-	fp1 = fopen(outname, "w+");
 
 
 	/*Getting codes along with characters*/
@@ -301,18 +276,24 @@ void decompact(char *filename){
 
 
 	//Reading binary code
-	binary = readLine(fp);
+	for(i = 0; !feof(fp); i++){
+		c = fgetc(fp);
+		if(feof(fp)) break;
+		binary = realloc(binary, sizeof(char)*(i+1));
+		binary[i] = c;
+	}
+	binary = realloc(binary, sizeof(char)*(i+1));
+	binary[i] = '\0';
+
 
 	bits = (strlen(binary) - 2)*8 + binary[strlen(binary)-1];		//	total number of valid bits
-	decodePlz(codes, k, binary, fp1, bits);	 // decodePlz does not deal with the last 2 bytes of binary
+	decodePlz(codes, k, binary, stdout, bits);	 // decodePlz does not deal with the last 2 bytes of binary
 
 
 
 	/*Deallocation*/
-	fclose(fp1);
 	fclose(fp);
 	free(binary);
-	free(outname);
 	for(i = 0; i < k; i++){
 		free(codes[i]->string);
 		free(codes[i]);
