@@ -4,7 +4,7 @@
 #include <file.h>
 #include <insert.h>
 
-
+/*For testing, prints entire double-linked list*/
 void printDeck(DECK *d){
 	int i;
 	NODE *aux = d->start;
@@ -16,7 +16,7 @@ void printDeck(DECK *d){
 
 
 
-/*Create empty deck*/
+/*Creates empty deck*/
 DECK *createDeck(void){
 	DECK *p = malloc(sizeof(DECK));
 	p->start = NULL;
@@ -25,7 +25,7 @@ DECK *createDeck(void){
 }
 
 
-/*Pop first element of the deck*/
+/*Pops first element of the deck*/
 NODE *pop(DECK *d){
 	NODE *aux = d->start;
 
@@ -35,7 +35,7 @@ NODE *pop(DECK *d){
 	return aux;
 }
 
-/*Insert element into deck in appropriate order*/
+/*Inserts element into deck in appropriate order*/
 void insert(DECK *d, NODE *n){
 	int i;
 	NODE *aux = d->start;

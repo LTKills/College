@@ -19,12 +19,33 @@
 #include <stdio.h>
 #include <bin3.h>
 
+
+/*Insert a node in the binary tree*/
 void insertBin3(NODE *start, NODE *insert){
-	if(start->left->val > insert->val) insertBin3(start->left, insert);
-	if(start->right->val < insert->val) insertBin3(start->right, insert);
-	else {
-		insert->left = start->left;
-		start->left = insert;
+	if(start->val == insert->val) return;		//	don't want anyone equal here
+
+	if(start->val > insert->val){
+		if(start->left == NULL){
+			insert->top = start;
+			start->left = insert;
+			insert->left = NULL;
+			insert->right = NULL;
+			return;
+		}
+	   	insertBin3(start->left, insert);
+	}
+
+	else if(start->val < insert->val){
+		if(start->right == NULL){
+
+			insert->top = start;
+			start->right = insert;
+			insert->left = NULL;
+			insert->right = NULL;
+			return;
+
+		}
+		insertBin3(start->right, insert);
 	}
 }
 

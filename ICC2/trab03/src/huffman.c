@@ -26,11 +26,12 @@
 #include <math.h>
 
 
+/*Searches for the letter with the code in string*/
 char fetch(CODE **codes, int ncodes, char *string){
 	int i;
 	for(i = 0; i < ncodes; i++)
-		if(strcmp(codes[i]->string, string) == 0) return codes[i]->letter;
-	return -1;
+		if(strcmp(codes[i]->string, string) == 0) return codes[i]->letter;	// return char
+	return -1; // not found
 }
 
 
@@ -44,7 +45,7 @@ void decodePlz(CODE **codes, int ncodes, char *binary, FILE *fp, int bits){
 	for(i = 0, j = 0; i < bits; i++){
 		string = realloc(string, sizeof(char)*(j+2));
 
-		if((binary[i/8] & (128 >> i%8)) != 0)	string[j] = '1';			//	AND WITH 10000000 SHIFTED >> I
+		if((binary[i/8] & (128 >> i%8)) != 0)	string[j] = '1';			//	DOES AN 'AND' WITH 10000000 SHIFTED >> I
 
 		else	string[j] = '0';
 
@@ -63,7 +64,7 @@ void decodePlz(CODE **codes, int ncodes, char *binary, FILE *fp, int bits){
 }
 
 
-/*Frees the deck*/
+/*Frees the deck recursively*/
 void destroyTree(NODE *start){
 	if(start == NULL) return;
 
@@ -78,18 +79,38 @@ void destroyTree(NODE *start){
 }
 
 
-/*Codes the binary trash*/
+/*Codes the binary shit*/
 int writeBin(unsigned char *binary, char *code, int j){
 	int i;
 	for(i = 0; i < strlen(code); i++){
-		if(code[i] == '1'){
+		if(code[i] == '1')
 			binary[j/8] = binary[j/8] | (128 >> j%8);
-		}
-		//binary[j/8] = binary[j/8] >> 1;
 		j++;
 	}
 	return j;
 }
+
+/*
+ *	imagine the following binary we want to create
+ *
+ *
+ *	10100011
+ *
+ *
+ *	we need to shitft the number 128 (10000000) j%8 times, cuz j is the total amount of bits we have,
+ *	counting past bytes (which we DO NOT want to consider)
+ *
+ *	if j starts at 16, we'll have:
+ *
+ *	j%8 == 0	j++, so we''l shift 128 (10000000) 0 times
+ *	j%8 == 1	j++, so we'll shift 128 (10000000) 1 time = (01000000)
+ *	j%8 == 2	j++	...
+ *
+ *	and so on until j == 24, then j%8 == 0 again, and we'll be on the next byte ;)
+ *
+ *
+ * */
+
 
 /*Generate the binary code for each character*/
 void codeGen(NODE *now, CODE **code, int nchars, int *pos, char *string){
@@ -196,6 +217,7 @@ void compact(char *filename){
 	for(i = 0; i < k; i++) codes[i] = malloc(sizeof(CODE));
 	codeGen(d->start, codes, 1, &n, string);
 
+	/*For each letter, get it's code and print along with it*/
 	for(l = 0; l < 128; l++){
 		for(i = 0; i < k; i++){
 			if(codes[i]->letter == l){
@@ -212,14 +234,14 @@ void compact(char *filename){
 	// Allocating for binary
 	for(i = 0, l = 0; i < k; i++)
 		l += strlen(codes[i]->string)*codes[i]->frequency;
-	l =  ceil(l/8.0);
+	l =  ceil(l/8.0);											//	in case there is no round number of bits
 	binary = (unsigned char *) calloc(l+1, sizeof(unsigned char));
 
 	// Generating binary
-	for(i = 0; i < strlen(data->string); i++){
-		for(n = 0; n < k; n++){
+	for(i = 0; i < strlen(data->string); i++){	// for each character at the message
+		for(n = 0; n < k; n++){					//	for each different character there is
 			if(data->string[i] == codes[n]->letter){
-				j = writeBin(binary, codes[n]->string, j);
+				j = writeBin(binary, codes[n]->string, j); // j is the current number of bits
 				break;
 			}
 		}
@@ -262,10 +284,18 @@ void decompact(char *filename){
 	c = fgetc(fp);
 	while(c != '-'){
 		fseek(fp, 3, SEEK_CUR);
+		/*
+		 *		a - 10101
+		 *		^	^
+		 *		r 	r => r == read
+		 *
+		 *		we need to jump the 3 characters between 'a' and it's code
+		 *
+		 * */
 		codes = realloc(codes, sizeof(CODE*)*(k+1));
 		codes[k] = malloc(sizeof(CODE));
-		codes[k]->letter = c;
-		codes[k]->string = readLine(fp);
+		codes[k]->letter = c;	//	save de letter
+		codes[k]->string = readLine(fp);	//	save the code
 		k++;
 		c = fgetc(fp);
 	}
@@ -276,7 +306,7 @@ void decompact(char *filename){
 
 
 	//Reading binary code
-	for(i = 0; !feof(fp); i++){
+	for(i = 0; !feof(fp); i++){	//	until the end of file
 		c = fgetc(fp);
 		if(feof(fp)) break;
 		binary = realloc(binary, sizeof(char)*(i+1));
