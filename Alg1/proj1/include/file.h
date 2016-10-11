@@ -6,6 +6,12 @@
 #define SPACE 32
 
 typedef enum{
+	FALSE,
+	TRUE
+} BOOL
+
+
+typedef enum{
 	INT,
 	CHAR,
 	UNSIGNED_CHAR,
