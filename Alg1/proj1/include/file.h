@@ -5,11 +5,6 @@
 #define ENTER 10
 #define SPACE 32
 
-typedef enum{
-	FALSE,
-	TRUE
-} BOOL
-
 
 typedef enum{
 	INT,

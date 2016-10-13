@@ -7,14 +7,18 @@ struct skip_t{
 	skip_t *next, *down;
 	char *address;
 	char *ip;
-	int isEnd;
 };
 
 typedef struct{
-	skip_t *start;
-	int element;
+	skip_t **starts;
+	int levels;
 } scontroler_t;
 
 
+void printSkipList(scontroler_t *myControler);
+scontroler_t *skipCreate(void);
+void insertSkip(scontroler_t *myControler, char *address, char *ip);
+skip_t *skipSearch(int level, char *address, skip_t *start);
+void skipRemove(skip_t *skiper);
 
 #endif
