@@ -80,13 +80,11 @@ int main(int argc, char *argv[]){
 						address = readLine(stdin, SPACE);
 						ip = readLine(stdin, ENTER);
 						insertSkip(myScontroler, address, ip);
-						printSkipList(myScontroler);
 						break;
 					case RM:
 						address = readLine(stdin, ENTER);
 						skiper = skipSearch(myScontroler->levels-1, address, myScontroler->starts[myScontroler->levels-1]);
 						skipRemove(skiper);
-						printSkipList(myScontroler);
 						break;
 					case SEARCH:
 						address = readLine(stdin, ENTER);
@@ -98,7 +96,10 @@ int main(int argc, char *argv[]){
 				break;
 		}
 	}
+	if(myScontroler->levels != 0) exterminateSkipList(myScontroler);
 	if(myControl.element != 0) exterminateList(&myControl);
+
+	free(myScontroler);
 	return 0;
 }
 

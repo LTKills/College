@@ -66,11 +66,6 @@ skip_t *insertPlease(int level, skip_t *starter, skip_t *insert){
 
 	// Base case (lol that sounds funny)
 	if(level == 0){
-		/*
-		insert->next = start->next;
-		start->next = insert;
-		insert->down = NULL;
-		*/
 		// Preparing test
 		test = malloc(sizeof(skip_t));
 		test->address = malloc(sizeof(char)*(strlen(insert->address)+1));
@@ -128,7 +123,6 @@ void insertSkip(scontroler_t *myControler, char *address, char *ip){
 	// Empty List case
 	if(myControler->starts == NULL){
 		createNewLevel(myControler);
-		//myControler->starts[0]->next->next->down = NULL;
 		insert->next = myControler->starts[0]->next;
 		myControler->starts[0]->next = insert;
 		return;
@@ -136,6 +130,9 @@ void insertSkip(scontroler_t *myControler, char *address, char *ip){
 
 	// Recursive call
 	aux2 = insertPlease((myControler->levels)-1, myControler->starts[myControler->levels-1], insert);
+	free(insert->address);
+	free(insert->ip);
+	free(insert);
 
 	// One more level
 	if(aux2 != NULL){
@@ -144,6 +141,7 @@ void insertSkip(scontroler_t *myControler, char *address, char *ip){
 		myControler->starts[myControler->levels-1]->next = insert;
 		insert->down = aux2;
 	}
+
 	return;
 }
 
@@ -154,7 +152,7 @@ skip_t *skipSearch(int level, char *address, skip_t *start){
 
 	while(strcmp(start->next->address, address) < 0) start = start->next;
 
-	if(strcmp(start->next->address, address) == 0) return start; // Returns the element before the one we are looking for (we'll use that for removing)
+	if(strcmp(start->next->address, address) == 0) return start; // Returns the element before the one we are looking for (for rm)
 	else{
 		if(level == 0) return NULL; // Search hit bottom
 		else return skipSearch(level-1, address, start->down);
@@ -165,16 +163,33 @@ skip_t *skipSearch(int level, char *address, skip_t *start){
 void skipRemove(skip_t *skiper){
 	skip_t *aux = skiper->next;
 
-	if(aux->down != NULL){
+	if(aux->down != NULL)
 		skipRemove(skiper->down);
-	}
 
 	skiper->next = aux->next;
 	free(aux->ip);
 	free(aux->address);
 	free(aux);
 	return;
+}
 
+void exterminateSkipList(scontroler_t *myControler){
+	skip_t *aux, *aux2;
+	int i;
+
+	for(i = 0; i < myControler->levels; i++){
+		aux = myControler->starts[i];
+		aux2 = aux->next;
+		while(aux2 != NULL){
+			aux2 = aux->next;
+			free(aux->ip);
+			free(aux->address);
+			free(aux);
+			aux = aux2;
+		}
+	}
+
+	free(myControler->starts);
 }
 
 
