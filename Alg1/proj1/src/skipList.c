@@ -130,9 +130,6 @@ void insertSkip(scontroler_t *myControler, char *address, char *ip){
 
 	// Recursive call
 	aux2 = insertPlease((myControler->levels)-1, myControler->starts[myControler->levels-1], insert);
-	free(insert->address);
-	free(insert->ip);
-	free(insert);
 
 	// One more level
 	if(aux2 != NULL){
@@ -141,6 +138,10 @@ void insertSkip(scontroler_t *myControler, char *address, char *ip){
 		myControler->starts[myControler->levels-1]->next = insert;
 		insert->down = aux2;
 	}
+	//free(insert->address);
+	//free(insert->ip);
+	//free(insert);
+
 
 	return;
 }
@@ -148,7 +149,13 @@ void insertSkip(scontroler_t *myControler, char *address, char *ip){
 
 
 /*Fetches an specific address at the skipList*/
-skip_t *skipSearch(int level, char *address, skip_t *start){
+skip_t *skipSearch(int level, char *address, skip_t *starter){
+	skip_t *start = starter, *aux = malloc(sizeof(skip_t));
+
+	if(strcmp(start->address, address) == 0){
+		aux->next = start;
+		return aux;
+	}
 
 	while(strcmp(start->next->address, address) < 0) start = start->next;
 
@@ -161,6 +168,8 @@ skip_t *skipSearch(int level, char *address, skip_t *start){
 
 /*Removes an element*/
 void skipRemove(skip_t *skiper){
+
+	if(skiper == NULL || skiper->next == NULL) return;
 	skip_t *aux = skiper->next;
 
 	if(aux->down != NULL)
