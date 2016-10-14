@@ -84,13 +84,16 @@ int main(int argc, char *argv[]){
 					case RM:
 						address = readLine(stdin, ENTER);
 						skiper = skipSearch(myScontroler->levels-1, address, myScontroler->starts[myScontroler->levels-1]);
-						skipRemove(skiper);
+						if(skiper != NULL)
+							skipRemove(skiper, skiper->next, myScontroler);
+						free(address);
 						break;
 					case SEARCH:
 						address = readLine(stdin, ENTER);
 						skiper = skipSearch(myScontroler->levels-1, address, myScontroler->starts[myScontroler->levels-1]);
 						if(skiper == NULL) printf("-1\n");
 						else printf("%s\n", skiper->next->ip);
+						free(address);
 						break;
 				}
 				break;

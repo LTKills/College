@@ -26,6 +26,7 @@ void printSkipList(scontroler_t *myControler){
 	}
 }
 
+/*Prepares a new level*/
 void createNewLevel(scontroler_t *myControler){
 	skip_t *big = malloc(sizeof(skip_t )), *small = malloc(sizeof(skip_t )), *aux;
 
@@ -58,7 +59,7 @@ void createNewLevel(scontroler_t *myControler){
 	myControler->levels++;
 }
 
-
+/*Recursive function for inserting on skiplist*/
 skip_t *insertPlease(int level, skip_t *starter, skip_t *insert){
 	skip_t *ohRly, *test, *start = starter;
 
@@ -109,7 +110,7 @@ skip_t *insertPlease(int level, skip_t *starter, skip_t *insert){
 
 }
 
-
+/*Ordered insertion on skiplist*/
 void insertSkip(scontroler_t *myControler, char *address, char *ip){
 	int i = 0;
 	// Setting up the node to be inserted (insert)
@@ -131,16 +132,17 @@ void insertSkip(scontroler_t *myControler, char *address, char *ip){
 	// Recursive call
 	aux2 = insertPlease((myControler->levels)-1, myControler->starts[myControler->levels-1], insert);
 
-	// One more level
+	// Add one more level
 	if(aux2 != NULL){
 		createNewLevel(myControler);
 		insert->next = myControler->starts[myControler->levels-1]->next;
 		myControler->starts[myControler->levels-1]->next = insert;
 		insert->down = aux2;
+		return;
 	}
-	//free(insert->address);
-	//free(insert->ip);
-	//free(insert);
+	free(insert->address);
+	free(insert->ip);
+	free(insert);
 
 
 	return;
@@ -150,12 +152,7 @@ void insertSkip(scontroler_t *myControler, char *address, char *ip){
 
 /*Fetches an specific address at the skipList*/
 skip_t *skipSearch(int level, char *address, skip_t *starter){
-	skip_t *start = starter, *aux = malloc(sizeof(skip_t));
-
-	if(strcmp(start->address, address) == 0){
-		aux->next = start;
-		return aux;
-	}
+	skip_t *start = starter;
 
 	while(strcmp(start->next->address, address) < 0) start = start->next;
 
@@ -166,15 +163,19 @@ skip_t *skipSearch(int level, char *address, skip_t *starter){
 	}
 }
 
-/*Removes an element*/
-void skipRemove(skip_t *skiper){
+/*Removes an element from the skiplist*/
+void skipRemove(skip_t *skiper, skip_t *aux, scontroler_t *myControler){
 
-	if(skiper == NULL || skiper->next == NULL) return;
-	skip_t *aux = skiper->next;
+	// There's a bit of a trick here
+	// Cuz our lists r not double-linked, we need to go through each level till the last element before the one to be removed
+	while(skiper->next != aux)
+	   	skiper = skiper->next;
 
+	// And then we call the recursion
 	if(aux->down != NULL)
-		skipRemove(skiper->down);
+		skipRemove(skiper->down, aux->down, myControler);
 
+	// And we free
 	skiper->next = aux->next;
 	free(aux->ip);
 	free(aux->address);
@@ -182,14 +183,16 @@ void skipRemove(skip_t *skiper){
 	return;
 }
 
+/*Deallocates all the skiplist*/
 void exterminateSkipList(scontroler_t *myControler){
 	skip_t *aux, *aux2;
 	int i;
 
+	// For each level
 	for(i = 0; i < myControler->levels; i++){
-		aux = myControler->starts[i];
+		aux = myControler->starts[i]; // Beginning of the level
 		aux2 = aux->next;
-		while(aux2 != NULL){
+		while(aux2 != NULL){ // Start freeing
 			aux2 = aux->next;
 			free(aux->ip);
 			free(aux->address);
@@ -198,7 +201,7 @@ void exterminateSkipList(scontroler_t *myControler){
 		}
 	}
 
-	free(myControler->starts);
+	free(myControler->starts); // Free the vector with all the first nodes
 }
 
 

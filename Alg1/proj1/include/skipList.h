@@ -19,7 +19,7 @@ void printSkipList(scontroler_t *myControler);
 scontroler_t *skipCreate(void);
 void insertSkip(scontroler_t *myControler, char *address, char *ip);
 skip_t *skipSearch(int level, char *address, skip_t *start);
-void skipRemove(skip_t *skiper);
+void skipRemove(skip_t *skiper, skip_t *aux, scontroler_t *myControler);
 void exterminateSkipList(scontroler_t *myControler);
 
 #endif
