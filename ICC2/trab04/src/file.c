@@ -17,10 +17,21 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <file.h>
 
 #define ENTER 10
 
+
+double euclidean_distance(double *vec1, double *vec2, int len) {
+	int i;
+	double dist = 0;
+
+	for(i = 0; i < len; i++)
+		dist += (vec1[i]-vec2[i])*(vec1[i]-vec2[i]);
+
+	return sqrt(dist);
+}
 
 /*Reads one line from file pointer 'file'*/
 char *readLine(FILE *file){
@@ -29,6 +40,7 @@ char *readLine(FILE *file){
 
 	do{
 		c = fgetc(file);
+		if(c == 13) c = fgetc(file);
 		string = (char *) realloc(string, sizeof(char)*size);
 		string[size-1] = c;
 		size++;
@@ -43,7 +55,7 @@ char *readLine(FILE *file){
 /*Reads whole content from file and stores on vec*/
 void *readFile(FILE* file, TYPE opt, int *vecSize){
 	void *vec = NULL;
-	int type;
+	int type = 0;
 	switch(opt){
 		case CHAR:
 		case UNSIGNED_CHAR:
