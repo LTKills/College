@@ -34,19 +34,33 @@ void printTree(struct NODE *root) {
 	if(root->right != NULL) printTree(root->right);
 }
 
-/*Doing rotations*/
-void rotate(struct NODE *root) {
-	struct NODE *aux;
-	if(root->balance > 0) { // rotate left
-		aux = root;
-	} else {				//	rotate right
+/*Doing rotations for balancing*/
+struct NODE *rotateLeft(struct NODE *root) {
+	struct NODE *a, *b;
 
-	}
+	a = root->right;
+	b = a->left;
+	a->left = root;
+	root->right = b;
+	root = a;
+
+}
+
+struct NODE *rotateRight(struct NODE *root) {
+	struct NODE *a, *b;
+
+	a = root->left;
+	b = a->right;
+	a->right = root;
+	root->left = b;
+	root = a;
+
 }
 
 /*Insert element*/
 void insertTree(struct NODE *root, int key) {
 	if(root->key == key) return; // no repeated elements allowed
+
 	else if(root->key > key) { // insert left
 		root->balance++;
 		if(root->left == NULL) {
@@ -56,10 +70,13 @@ void insertTree(struct NODE *root, int key) {
 			root->left->right = NULL;
 			return;
 		}
-		if(root->balance >= 2) rotate(root);
-		return insertTree(root->left, key);
-	}
-	else {					//	insert right
+		insertTree(root->left, key);
+		if(root->balance <= -2) {
+			printf("rotating\n");
+			if(root->right != NULL && root->right->balance > 0) rotateRight(root->right);
+			rotateLeft(root);
+		}
+	} else {					//	insert right
 		root->balance--;
 		if(root->right == NULL) {
 			root->right = malloc(sizeof(struct NODE));
@@ -68,8 +85,11 @@ void insertTree(struct NODE *root, int key) {
 			root->right->right = NULL;
 			return;
 		}
-		if(root->balance <= -2) rotate(root);
-		return insertTree(root->right, key);
+		insertTree(root->right, key);
+		if(root->balance >= 2) {
+			if(root->left != NULL && root->left->balance < 0) rotateLeft(root->left);
+			rotateRight(root);
+		}
 	}
 }
 
