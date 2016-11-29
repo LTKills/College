@@ -2,45 +2,41 @@
 #include <stdio.h>
 #include <limits.h>
 
+/*Merges two subvectors orderly*/
+void merge(int *vec, int start, int mid, int end) {
+	int i = start, j = mid+1, k;
+	int *aux;
 
-void merge(int *vector, int start, int middle, int end){
-	int *vec1, *vec2, i, j, k;
+	aux = malloc(sizeof(int) * (end-start+1));
 
-	vec1 = malloc(sizeof(int)*(middle-start+1));
-	vec2 = malloc(sizeof(int)*(end-middle+1));
+	for(k = start; k <= end; k++) aux[k-start] = vec[k]; // copying to auxiliary array
 
-	/*COPYING VECTOR*/
-	for(i = start; i < middle; i++) vec1[i-start] = vector[i];
-	vec1[i-start] = INT_MAX; // PUT SENTINEL
-	for(i = middle; i <= end; i++) vec2[i-middle] = vector[i];
-	vec2[i-middle] = INT_MAX;
-
-	i = 0;
-	j = 0;
-
-	/*REARRANGING ORIGINAL VECTOR*/
-	for(k = 0; k <= end-start; k++){
-		if(vec1[j] == vec2[i] == INT_MAX) break;
-
-		if(vec2[i] > vec1[j])
-			vector[k] = vec1[j++];
-		else vector[k] = vec2[i++];
+	for(k = start; k <= end; k++) {
+		if(i > mid) { 	// Transpassed left vector
+			vec[k] = aux[j-start];
+			j++;
+		} else if(j > end) {	// Transpassed right vector
+			vec[k] = aux[i-start];
+			i++;
+		} else if(aux[j-start] > aux[i-start]) { // Get from left
+			vec[k] = aux[i-start];
+			i++;
+		} else { // Get from right
+			vec[k] = aux[j-start];
+			j++;
+		}
 	}
 
-	free(vec1);
-	free(vec2);
-
+	free(aux);
 }
 
-/*Recursion call*/
-void mergeSort(int *vector, int start, int end){
-	int middle = (end+start)/2;
+/*Calling function merge recursively*/
+void mergeSort(int *vec, int start, int end) {
+	int mid = (start + end)/2;
+	if(start == end) return;
 
-	if(start >= end) return;
+	mergeSort(vec, start, mid);
+	mergeSort(vec, mid+1, end);
 
-	mergeSort(vector, start, middle);
-	mergeSort(vector, middle+1, end);
-
-	merge(vector, start, middle, end);
-
+	merge(vec, start, mid, end);
 }

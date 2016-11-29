@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 
-void swap(int *vec, int a, int b){
+void swap(int *vec, int a, int b) {
 	int aux;
 
 	aux = vec[a];
@@ -29,7 +29,7 @@ void swap(int *vec, int a, int b){
 }
 
 
-void bubbleSort(int *vec, int size){
+void bubbleSort(int *vec, int size) {
 	int i, j;
 	for(i = 0; i < size; i++)
 		for(j = 1; j < size-i; j++)

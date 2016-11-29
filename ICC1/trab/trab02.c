@@ -1,9 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int **
-hashAlloc (int n, int k, int *sizes)
-{
+int **hashAlloc (int n, int k, int *sizes) {
   int i, j, atual;
   int **hash = NULL;
 
@@ -23,9 +21,7 @@ hashAlloc (int n, int k, int *sizes)
 
 
 
-int
-main (int argc, char *argv[])
-{
+int main (int argc, char *argv[]) {
   int **hash = NULL;
   int *sizes = NULL;
   int i, j, k, n;		// k -> chave   n -> quantidade de elementos

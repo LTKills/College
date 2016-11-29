@@ -19,17 +19,17 @@
 #include <stdio.h>
 
 
+void insertionSort(int *vec, int size) {
+	int i, j, key;
 
-void insertionSort(int *vec, int size){
-	int i, j, mine;
-
-	for(i = 1; i < size; i++){
+	for(i = 1; i < size; i++) {
+		key = vec[i];
 		j = i-1;
-		mine = vec[i];
-		while(j >= 0 && vec[j] > mine){
+
+		while(j >= 0 && vec[j] > key) {
 			vec[j+1] = vec[j];
 			j--;
 		}
-		vec[j+1] = mine;
+		vec[j+1] = key;
 	}
 }
