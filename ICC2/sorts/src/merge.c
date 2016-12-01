@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <limits.h>
 
 /*Merges two subvectors orderly*/
 void merge(int *vec, int start, int mid, int end) {

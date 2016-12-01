@@ -11,4 +11,10 @@ void shellSort(int *vec, int size);
 
 void mergeSort(int *vec, int start, int end);
 
+void quickSort(int *vec, int start, int end);
+
+void heapSort(int *vec, int size);
+
+int *countingSort(int *vec, int size);
+
 #endif
