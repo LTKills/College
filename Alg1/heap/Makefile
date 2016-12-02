@@ -1,2 +1,7 @@
+SRC=src/heap.c src/main.c
+BINARY=t
+COMPILER=gcc
+INCLUDE=./include
+
 all:
-	gcc -o t src/main.c src/heap.c -I./include
+	$(COMPILER) -o $(BINARY) $(SRC) -I$(INCLUDE) -O2 -lm
