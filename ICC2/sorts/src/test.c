@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
 //	printVec(vec, SIZE);
 
 	printf("\n\nAFTER\n");
-	quickSort(vec, 0, SIZE-1);
+	shellSort(vec, SIZE);
 //	printVec(vec, SIZE);
 
 

@@ -40,7 +40,7 @@ int *countingSort(int *vec, int size) {
 	for(i = 1; i < max-min+1; i++) aux[i] += aux[i-1];
 
 	// giving answers
-	ans = malloc(size, sizeof(int));
+	ans = calloc(size, sizeof(int));
 
 	for(i = size-1; i >= 0; i--) {
 		aux[vec[i]-min]--;
