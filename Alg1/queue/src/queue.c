@@ -20,6 +20,13 @@
 #include <limits.h>
 #include <queue.h>
 
+struct QUEUE *createQueue() {
+    struct QUEUE *queue = malloc(sizeof(struct QUEUE));
+    queue->n = 0;
+    queue->q = NULL;
+    return queue;
+}
+
 int isEmpty (struct QUEUE *queue){
 	if(queue->n == 0) return TRUE;
 	return FALSE;

@@ -20,6 +20,13 @@
 #include <limits.h>
 #include <stack.h>
 
+struct STACK *createStack() {
+    struct STACK *stack = malloc(sizeof(struct STACK));
+    stack->n = 0;
+    stack->q = NULL;
+    return stack;
+}
+
 int isEmpty (struct STACK *stack){
 	if(stack->n == 0) return TRUE;
 	return FALSE;
