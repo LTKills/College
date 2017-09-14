@@ -1,0 +1,11 @@
+1
+4
+a b c d A B C D
+a:DBCA
+b:DACB
+c:BCAD
+d:ABCD
+A:abdc
+B:cbad
+C:dcba
+D:adcb

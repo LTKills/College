@@ -13,6 +13,9 @@ def search(dic, value):
 
 
 def priority(wife, lover, husband, preferences):
+    if (husband == None):
+        return True
+
     for pretendent in preferences[wife]:
         if (pretendent == lover):
             return True
@@ -25,40 +28,35 @@ def match():
     preferences = {}
     ans = {}
 
-
     n = int(input())
     people = input().split(' ')
 
-    males = people[:n]
-    freeMen = sorted(males)
-
-    females = people[n:]
-    freeWomen = sorted(females)
-
+    freeMen = people[:n]
 
     for person in people:
         preferences[person] = list(input()[2:])
 
-    # free not empty
+    # there are uncoupled men
     while (freeMen):
+
+        # choose man
         man = freeMen[0]
         husband = search(ans, preferences[man][0])
 
-        if (not husband):
-            ans[man] = preferences[man].pop(0)  # by the power to me conceived, I here by declare you
-            freeMen.pop(0)                      # husband
-            freeWomen.remove(ans[man])          # and wife
+        #woman is free
+        if (husband == None):
+            ans[man] = preferences[man][0]
+            freeMen.pop(0)
 
+        # woman prefers man to her husband
         elif (priority(preferences[man][0], man, husband, preferences)):
-            ans[man] = preferences[man].pop(0)  # by the power to me conceived, I here by declare you
+            ans[man] = preferences[man][0]
+            freeMen.pop(0)
             freeMen.append(husband)
-            freeMen.pop(0)                      # husband and wife
-            sorted(freeMen)   # sorry old pal
 
-
+        preferences[man].pop(0)
 
     printAns(ans)
-    print ("")
 
 
 
@@ -68,3 +66,6 @@ tests = int(input())
 
 for k in range(tests):
     match()
+    if (k != tests-1):
+        print ()
+
