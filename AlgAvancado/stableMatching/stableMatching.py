@@ -1,8 +1,9 @@
 
 
 def printAns(ans):
-    for a in ans:
-        print (a + ' ' + ans[a])
+    for a in range(len(ans)):
+        letter = chr(a + 97)
+        print (letter + ' ' + ans[letter])
 
 
 def search(dic, value):
@@ -43,7 +44,7 @@ def match():
         man = freeMen[0]
         husband = search(ans, preferences[man][0])
 
-        #woman is free
+        # woman is free
         if (husband == None):
             ans[man] = preferences[man][0]
             freeMen.pop(0)
@@ -51,6 +52,7 @@ def match():
         # woman prefers man to her husband
         elif (priority(preferences[man][0], man, husband, preferences)):
             ans[man] = preferences[man][0]
+            ans[husband] = -1
             freeMen.pop(0)
             freeMen.append(husband)
 
