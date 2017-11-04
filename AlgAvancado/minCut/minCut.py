@@ -43,13 +43,13 @@ class Graph:
         while(self.augmenting_path()):
             # find bottleneck flow
             s = sink
-            while(s !=  source):
-                self.flow = min (self.flow, self.graph[self.parent[s]][s])
+            while(s != source):
+                self.flow = min(self.flow, self.graph[self.parent[s]][s])
                 s = self.parent[s]
 
             # update residual graph and graph
             v = sink
-            while(v !=  source):
+            while(v != source):
                 u = self.parent[v]
                 self.graph[u][v] -= self.flow
                 self.graph[v][u] += self.flow
