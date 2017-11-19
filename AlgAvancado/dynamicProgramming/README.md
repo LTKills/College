@@ -11,4 +11,5 @@ This repo contains implementations using dynamic programming for the following c
 
 ## UVa Problems (See PDFs for descriptions)
 - Garments: p11450 [Done!]
-- Trains: p11456
+- Trains: p11456 [Done!]
+- SuperSale: p10130
