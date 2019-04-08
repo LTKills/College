@@ -1,12 +1,11 @@
-# Faculdade
+# College
 School projects and work in general
 
-This repo contains:
+This repo contains my school assignments for the following subjects:
 
-- All ICC1's RunCode's exercices [FINISHED]
-- All ICC1's projects (trab01 - trab05) [FINISHED]
-- All ICC2's projects (trab01 - trab06) [FINISHED]
-- All ICC2's sorting algorithms [FINISHED]
-- All Alg1's projects (1 and 2) [FINISHED]
+- Introduction to Computer Science I
+- Introduction to Computer Science II
+- Algorithms and Data Structures
+- Graphs
 
-Note: PDFs, inputs and outputs not included due to big size :(
+Note: PDFs with descriptions, inputs and outputs not included due to big size :(
