@@ -1,2 +1,2 @@
-# Algorithms and Data Structures' course
+# Algorithms and Data Structures Course Repo
 Pretty much straightforward
