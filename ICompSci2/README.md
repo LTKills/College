@@ -1,2 +1,2 @@
 # Introduction to Computer Science II Course Repo
-Pretty much straightforward
+My Intro do CompSci II course codes
