@@ -1,7 +1,7 @@
-Exercícios inglês(Project Euler):
+Problems in English(Project Euler):
 https://projecteuler.net/archives
 
-Exercícios português(IME):
+Problems in Portuguese(IME):
 http://www.ime.usp.br/~macmulti/exercicios/
 
 C++(cprograming.com):
